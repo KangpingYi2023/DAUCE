@@ -1,15 +1,15 @@
-# SAUCE
+# DAUCE
 
-This is an open source implementation of "SAUCE: A Self-adaptive Update Method For Learned Cardinality Estimators".
+This is an open source implementation of "DAUCE: A Self-adaptive Update Method For Learned Cardinality Estimators".
 
 ### Environments
 
 ```shell
 # create anaconda environments
-conda create --name sauce python=3.9
-conda activate sauce
+conda create --name dauce python=3.9
+conda activate dauce
 
-cd SAUCE/
+cd DAUCE/
 # PyTorch is also contained in requirements.txt. You can also comment it and install it by yourself
 pip install -r requirements.txt
 
@@ -22,7 +22,7 @@ pip install .
 
 ```shell
 # You can run an end-to-end experiment by running this conmmand. Some config examples are stored in ./end2end/configs/. You can choose the config file from this python script
-cd SAUCE/
+cd DAUCE/
 python end2end/multi_experiments.py
 ```
 
@@ -43,3 +43,4 @@ To execute the end-to-end update experiment, you need to create a new Anaconda e
 cd FactorJoin/
 python update_experiment.py
 ```
+
