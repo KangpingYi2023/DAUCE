@@ -1,6 +1,6 @@
 # DAUCE
 
-This is an open source implementation of "DAUCE: A Self-adaptive Update Method For Learned Cardinality Estimators".
+This is an open source implementation of "DAUCE: A Drift-aware Update Method For Learned Cardinality Estimators".
 
 ### Environments
 
@@ -43,4 +43,5 @@ To execute the end-to-end update experiment, you need to create a new Anaconda e
 cd FactorJoin/
 python update_experiment.py
 ```
+
 
