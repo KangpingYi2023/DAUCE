@@ -8,6 +8,7 @@ FactorJoin/checkpoints/
 FactorJoin/datasets/
 FactorJoin/Postgres/
 FactorJoin/pg/
+docs/
 *-sample*.npy
 *power.npy
 FACE/evaluate/oracle/*
