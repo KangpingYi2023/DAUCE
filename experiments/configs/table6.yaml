@@ -1,0 +1,23 @@
+datasets: [bjaq, power]
+models: [face]
+methods: [DDUp, DAUCE]
+scenarios: [tupleskew, valueskew]
+num_workload: 3
+query_seeds: [0]
+num_queries: 1000
+update_fraction: 0.2
+epochs: 40
+params:
+  data_updater.skew_ratio: 0.001
+  random_seed: 0
+  face.learning_rate: 0.00002
+  face.factor: auto
+  face.map_samples: 40000000
+  face.map_iterations: 40
+  face.query_samples: 3200
+  face.query_iterations: 4
+  adapt.transfer_ratio: 2.0
+  adapt.use_ema: true
+  adapt.use_caching: true
+  adapt.use_weighted_replay: true
+  adapt.freeze: false

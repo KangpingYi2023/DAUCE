@@ -1,0 +1,40 @@
+# FACE forest 调优配置（2026-09-04 保留，尚未实训验证；此前 forest 从未训出过 checkpoint）
+# 依据：forest 行序强相关（lag-1 自相关 0.68–0.99），shuffle=False 时 minibatch 非 i.i.d.；
+#       10 列混合尺度（0–64 至 0–7173），标准化后 z 范围 [-9.9, 10.2]，tail_bound=3 覆盖不足；
+#       全整数列，num_bins=8 分辨率不足；10 维数据用 hidden 64/steps 5 容量偏小
+#       （对照：6 维的 power 成功配置为 hidden 108/steps 6）。
+# 注意：
+#   1. 使用前需先修复 Train-Forest.py 的路径问题（数据在 data/forest/forest.npy，
+#      ckpt 目录 FACE/train/models/forest/ 需创建），详见脚本内注释。
+#   2. 评估链路接入时需新建 FACE/config/forest.yaml 指向本配置（或重命名本文件），
+#      并在 incremental_train.py 的 origin 模型路径映射（现仅硬编码 bjaq/power）补 forest 分支。
+#   3. 预处理噪声/标准化方案与 table_sample.py 评估端保持一致，未改动。
+dataset_name: "forest"
+hidden_features: 128        # 旧值 64
+num_flow_steps: 10          # 旧值 5；10 维数据每维至少被 coupling 变换 5 次
+flow_id: 2                  # 与 Train-Forest.py 原 ID=2 保持一致
+features: 10
+reuse_from_file: false
+reuse_file_path: "./FACE/train/"
+query_seed: 45
+query_cnt: 50
+anneal_learning_rate: true
+base_transform_type: "rq-coupling"
+dropout_probability: 0
+grad_norm_clip_value: 5.0
+linear_transform_type: "lu"
+num_bins: 64                # 旧值 8
+num_training_steps: 400000  # ≈352 epoch（TRAIN_LOADER_LEN≈1022，10% holdout 后）
+num_transform_blocks: 4     # 旧值 2；混合尺度列需要更深的 coupling 网络
+seed: 1638128
+tail_bound: 10              # 旧值 3；覆盖 z ∈ [-9.9, 10.2] 的主体
+use_batch_norm: false
+
+# update parameters
+train_batch_size: 512
+learning_rate: 0.0003       # 旧值 0.0005
+monitor_interval: 5000      # 旧调试值 100（400k 步会验证 4000 次，I/O 拖死训练）
+save_model_interval: 20000  # 旧调试值 200（会落盘 2000 个 ~1.4MB checkpoint）
+val_batch_size: 65536       # 旧值 262144；262k×10 的验证批峰值显存可达数 GB
+val_holdout_fraction: 0.1   # 新增：随机 10% holdout（旧行为 val=train）
+shuffle: true               # 新增：修复空间序非 i.i.d. minibatch（首要修正）

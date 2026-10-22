@@ -1,0 +1,41 @@
+# FACE bjaq 调优配置（2026-09-04 保留，尚未实训验证）
+# 依据：bjaq 为时间序（lag-1 自相关 0.93–0.99），shuffle=False 时 minibatch 非 i.i.d.；
+#       计数列右偏（skew +1~+2），标准化后 z_max 达 17.9，tail_bound=3 之外压着 1–1.8% 质量；
+#       整数计数列（697–854 唯一值）在 num_bins=8 下样条分辨率不足。
+# 对照成功配置：power.yaml（hidden 108 / steps 6，数据 i.i.d.）。
+# 注意：
+#   1. flow_id=3 是新 ID，与现存 bjaq-id2-best-val.t（旧配置 hidden 64/steps 5/bins 8/tail 3）隔离；
+#      旧 bjaq.yaml 保持不动，评估旧模型仍用它。
+#   2. 验证调优模型时，评估链路（Evaluate-FACE-end2end.py / incremental_train.py 读取
+#      FACE/config/{dataset}.yaml）需临时指向本文件，且 checkpoint 需按
+#      models/face-origin-bjaq-id3-best-val.t 命名放置。
+#   3. 预处理（U[0,1) 噪声、末列 ×0.1、RandomState(1234)、标准化）与 table_sample.py
+#      评估端保持一致，本配置未改动；若改为对称去量化噪声，评估端必须镜像修改。
+dataset_name: "bjaq"
+hidden_features: 128        # 旧值 64；对齐 power 成功量级（108）
+num_flow_steps: 8           # 旧值 5；每维至少被 coupling 变换 4 次
+flow_id: 3                  # 旧 checkpoint 为 id2
+features: 5
+reuse_from_file: false
+reuse_file_path: "./FACE/train/"
+query_seed: 45
+query_cnt: 50
+anneal_learning_rate: true
+base_transform_type: "rq-coupling"
+dropout_probability: 0
+grad_norm_clip_value: 5.0
+linear_transform_type: "lu"
+num_bins: 64                # 旧值 8；tail_bound 扩大后保持样条分辨率（bin 宽 0.31 vs 旧 0.75）
+num_training_steps: 400000
+num_transform_blocks: 2
+seed: 1638128
+tail_bound: 10              # 旧值 3；覆盖偏态计数列 1–1.8% 的尾部质量（z_max 17.9）
+use_batch_norm: false
+
+# update parameters
+train_batch_size: 512
+learning_rate: 0.0003       # 旧值 0.0005；网络加大后略降，配合 cosine 退火
+monitor_interval: 5000
+val_batch_size: 65536       # 旧值 262144；压验证峰值显存
+val_holdout_fraction: 0.1   # 新增：随机 10% holdout 作验证集（旧行为 val=train，best-val 失效）
+shuffle: true               # 新增：修复时间序非 i.i.d. minibatch（首要修正）

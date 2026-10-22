@@ -1,0 +1,16 @@
+datasets: [census, forest, bjaq, power]
+scenarios: [sample, tupleskew, valueskew]
+ddup_models:
+  census: [naru, transformer]
+  forest: [naru, transformer]
+  bjaq: [naru, transformer, face]
+  power: [face]
+column_settings:
+  census: {ncols: 4, mix: 0.5}
+  forest: {ncols: 3, mix: 0.28}
+  bjaq: {ncols: 3, mix: 0.175}
+  power: {ncols: 1, mix: 1.0}
+skew_ratio: 0.001
+random_seed: 0
+bootstrap: 1000
+sample_size: 500

@@ -1,0 +1,23 @@
+datasets: [census, forest, bjaq]
+models: [naru, transformer]
+methods: [DDUp, DAUCE]
+scenarios: [tupleskew]
+num_workload: 15
+query_seeds: [7, 11, 23]
+num_queries: 1000
+update_sizes: {census: 4000, bjaq: 46000, forest: 70000}
+epochs: 40
+params:
+  data_updater.skew_ratio: 0.001
+  random_seed: 1226
+  adapt.use_ema: true
+  adapt.ema_per_epoch: false
+  adapt.use_cosine_decay: true
+  adapt.use_weighted_replay: true
+  adapt.use_caching: true
+  adapt.freeze: false
+  adapt.stale_log: true
+  adapt.kd_weight: null
+  adapt.ema_halflife_epochs: null
+  adapt.transfer_ratio: 2.0
+  eval.crn_seed: 20260913
